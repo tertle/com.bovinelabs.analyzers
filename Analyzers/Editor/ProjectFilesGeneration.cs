@@ -57,8 +57,7 @@ namespace BovineLabs.Editor
             var currentDirectory = Directory.GetCurrentDirectory();
 
             // TODO do not require strict com.bovinelabs.analyzers folder
-            var roslynAnalyzerBaseDir = new DirectoryInfo(
-                Path.Combine(currentDirectory, "Packages/com.bovinelabs.analyzers/Analyzers/RoslynAnalyzers"));
+            var roslynAnalyzerBaseDir = new DirectoryInfo(Path.Combine(currentDirectory, "RoslynAnalyzers"));
 
             if (!roslynAnalyzerBaseDir.Exists)
             {
