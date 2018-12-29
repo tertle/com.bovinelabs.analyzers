@@ -54,9 +54,11 @@ namespace BovineLabs.Editor
         /// </summary>
         private static void SetRoslynAnalyzers(XElement projectContentElement, XNamespace xmlns)
         {
+            var currentDirectory = Directory.GetCurrentDirectory();
+
             // TODO do not require strict com.bovinelabs.analyzers folder
-            var roslynAnalyzerBaseDir = new DirectoryInfo(Path.Combine(Application.dataPath,
-                "../Packages/com.bovinelabs.analyzers/Analyzers/RoslynAnalyzers"));
+            var roslynAnalyzerBaseDir = new DirectoryInfo(
+                Path.Combine(currentDirectory, "Packages/com.bovinelabs.analyzers/Analyzers/RoslynAnalyzers"));
 
             if (!roslynAnalyzerBaseDir.Exists)
             {
@@ -64,8 +66,6 @@ namespace BovineLabs.Editor
                     $"Directory {roslynAnalyzerBaseDir} does not exist, please place analyzers in correct location.");
                 return;
             }
-
-            var currentDirectory = Directory.GetCurrentDirectory();
 
             var relPaths = roslynAnalyzerBaseDir.GetFiles("*", SearchOption.AllDirectories)
                     .Select(x => x.FullName.Substring(currentDirectory.Length + 1));
