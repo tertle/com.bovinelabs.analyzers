@@ -1,6 +1,6 @@
 # com.bovinelabs.analyzers
 
-Package to add roselyn analyzers to unity generated projects.
+Package to add Roslyn Analyzers to Unity projects.
 
 ### Install
 Download or pull into your projects Packages\com.bovinelabs.analyzers folder
