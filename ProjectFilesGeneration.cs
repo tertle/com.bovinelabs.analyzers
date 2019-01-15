@@ -2,14 +2,13 @@
 //     Copyright (c) Timothy Raines. All rights reserved.
 // </copyright>
 
-namespace BovineLabs.Editor
+namespace BovineLabs.Analyzers
 {
     using System;
     using System.IO;
     using System.Linq;
     using System.Text;
     using System.Xml.Linq;
-    using SyntaxTree.VisualStudio.Unity.Bridge;
     using UnityEditor;
     using UnityEngine;
 
@@ -23,7 +22,8 @@ namespace BovineLabs.Editor
 
         static ProjectFilesGeneration()
         {
-            ProjectFilesGenerator.ProjectFileGeneration += (name, content) =>
+#if ENABLE_VSTU
+            SyntaxTree.VisualStudio.Unity.Bridge.ProjectFilesGenerator.ProjectFileGeneration += (name, content) =>
             {
                 XDocument xml = XDocument.Parse(content);
 
@@ -36,6 +36,7 @@ namespace BovineLabs.Editor
                     return str.ToString();
                 }
             };
+#endif
         }
 
         private static void UpgradeProjectFile(XDocument doc)
@@ -57,12 +58,11 @@ namespace BovineLabs.Editor
             var currentDirectory = Directory.GetCurrentDirectory();
 
             // TODO do not require strict com.bovinelabs.analyzers folder
-            var roslynAnalyzerBaseDir = new DirectoryInfo(Path.Combine(currentDirectory, "RoslynAnalyzers"));
+            var roslynAnalyzerBaseDir = new DirectoryInfo(Path.Combine(currentDirectory, Util.GetDirectory()));
 
             if (!roslynAnalyzerBaseDir.Exists)
             {
-                Debug.LogWarning(
-                    $"Directory {roslynAnalyzerBaseDir} does not exist, please place analyzers in correct location.");
+                //Debug.LogWarning($"Directory {roslynAnalyzerBaseDir} does not exist, please place analyzers in correct location.");
                 return;
             }
 
@@ -145,8 +145,6 @@ namespace BovineLabs.Editor
         // Adds a property to the first property group without a condition
         private static void AddProperty(XContainer root, XNamespace xmlns, string name, string content)
         {
-            // Debug.Log($"Adding project property {name}. Value: {content}");
-
             var propertyGroup = root.Elements(xmlns + "PropertyGroup")
               .FirstOrDefault(e => !e.Attributes(xmlns + "Condition").Any());
             if (propertyGroup == null)

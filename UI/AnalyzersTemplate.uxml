@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.Experimental.UIElements">
+  <ui:Label class="title" text="Analyzers"/>
+  <ui:Box>
+    <ui:Label text="Analyzer Directory"/>
+    <ui:TextField name="targetdirectory" text="RoslynAnalyzers" />
+  </ui:Box>
+  <ui:Button name="stylecop" text="Import StyleCop"/>
+</ui:UXML>
