@@ -20,6 +20,7 @@ An option to import StyleCop (with a few custom rules for Unity) is available fo
 ### Requirements
 * Unity 2018.3.0f2 onwards.
 * Visual Studios (Rider support will come at some point)
+* Scripting Runtime Verison .NET 4.x Equivalent 
 
 Unfortunately as far as I can tell, other code editors such as Visual Studio Code do not support Roslyn Analyzers at this point. If I am mistaken please point me in the right direction and I'll see if there is anyway to support it.
 
