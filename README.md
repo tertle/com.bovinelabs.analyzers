@@ -15,7 +15,7 @@ Alternatively download into the Packages/com.bovinelabs.analyzers folder. Please
 ### Using
 A simple UI interface is available at Windows/BovineLabs/Analyzers. This allows you change the target directory for the analyzers.
 
-An option to import StyleCop (with a few custom rules for Unity) is available for use or as a test. If working, you should see your analyzers in your project. For example, References/Analyzers/StyleCop.Analyzers
+An option to import StyleCop (with a few custom rules for Unity) is available for use or as a test. If working, you should see your analyzers in your project references, under for example, References/Analyzers/StyleCop.Analyzers
 
 ### Requirements
 * Unity 2018.3.0f2 onwards.
