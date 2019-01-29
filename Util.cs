@@ -4,6 +4,7 @@
 
 namespace BovineLabs.Analyzers
 {
+    using System.IO;
     using UnityEditor;
 
     /// <summary>
@@ -22,6 +23,16 @@ namespace BovineLabs.Analyzers
         public static void SetDirectory(string directory)
         {
             EditorPrefs.SetString(DirectoryKey, directory);
+        }
+
+        public static string GetCreateDirectory()
+        {
+            var directory = GetDirectory();
+
+            var fullDir = Path.Combine(Directory.GetCurrentDirectory(), directory);
+            Directory.CreateDirectory(fullDir);
+
+            return directory;
         }
     }
 }

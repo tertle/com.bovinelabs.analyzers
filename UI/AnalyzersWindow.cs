@@ -12,7 +12,9 @@ namespace BovineLabs.Analyzers.UI
 
     public class AnalyzersWindow : EditorWindow
     {
-        private const string StyleCopDirectory = "Packages/com.bovinelabs.analyzers/RoslynAnalyzers/StyleCop/";
+        private const string Packages = "Packages/com.bovinelabs.analyzers/";
+        private const string StyleCopDirectory = Packages + "RoslynAnalyzers/StyleCop/";
+        private const string ReflectionDirectory = Packages + "RoslynAnalyzers/Reflection/";
         private const string UIDirectory = "Packages/com.bovinelabs.analyzers/UI/";
 
         [MenuItem("Window/BovineLabs/Analyzers")]
@@ -25,15 +27,20 @@ namespace BovineLabs.Analyzers.UI
 
         private static void StyleCopOnClicked()
         {
-            var directory = Util.GetDirectory();
-
-            var fullDir = Path.Combine(Directory.GetCurrentDirectory(), directory);
-            Directory.CreateDirectory(fullDir);
+            var directory = Util.GetCreateDirectory();
 
             Copy(StyleCopDirectory + "StyleCop.Analyzers.dll", directory);
             Copy(StyleCopDirectory + "StyleCop.Analyzers.CodeFixes.dll", directory);
             Copy(StyleCopDirectory + "Ruleset.ruleset", directory);
             Copy(StyleCopDirectory + "stylecop.json", directory);
+        }
+
+        private static void ReflectionOnClicked()
+        {
+            var directory = Util.GetCreateDirectory();
+
+            Copy(ReflectionDirectory + "ReflectionAnalyzers.dll", directory);
+            Copy(ReflectionDirectory + "Gu.Roslyn.Extensions.dll", directory);
         }
 
         private static void Copy(string asset, string targetDirectory)
@@ -53,6 +60,7 @@ namespace BovineLabs.Analyzers.UI
             root.Add(ui);
 
             root.Query<Button>("stylecop").First().clickable.clicked += StyleCopOnClicked;
+            root.Query<Button>("reflection").First().clickable.clicked += ReflectionOnClicked;
 
             var targetDirectoryField = root.Query<TextField>("targetdirectory").First();
             targetDirectoryField.value = Util.GetDirectory();

@@ -5,5 +5,6 @@
     <ui:Label text="Analyzer Directory"/>
     <ui:TextField name="targetdirectory" text="RoslynAnalyzers" />
   </ui:Box>
-  <ui:Button name="stylecop" text="Import StyleCop"/>
+  <ui:Button name="stylecop" text="Import StyleCopAnalyzers"/>
+  <ui:Button name="reflection" text="Import ReflectionAnalyzers"/>
 </ui:UXML>
