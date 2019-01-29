@@ -7,4 +7,5 @@
   </ui:Box>
   <ui:Button name="stylecop" text="Import StyleCopAnalyzers"/>
   <ui:Button name="reflection" text="Import ReflectionAnalyzers"/>
+  <ui:Button name="documentation" text="Import DocumentationAnalyzers"/>
 </ui:UXML>

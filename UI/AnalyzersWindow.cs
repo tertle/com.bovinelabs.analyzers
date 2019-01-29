@@ -13,8 +13,9 @@ namespace BovineLabs.Analyzers.UI
     public class AnalyzersWindow : EditorWindow
     {
         private const string Packages = "Packages/com.bovinelabs.analyzers/";
-        private const string StyleCopDirectory = Packages + "RoslynAnalyzers/StyleCop/";
-        private const string ReflectionDirectory = Packages + "RoslynAnalyzers/Reflection/";
+        private const string StyleCopDirectory = Packages + "RoslynAnalyzers/StyleCopAnalyzers/";
+        private const string ReflectionDirectory = Packages + "RoslynAnalyzers/ReflectionAnalyzers/";
+        private const string DocumentationDirectory = Packages + "RoslynAnalyzers/DocumentationAnalyzers/";
         private const string UIDirectory = "Packages/com.bovinelabs.analyzers/UI/";
 
         [MenuItem("Window/BovineLabs/Analyzers")]
@@ -43,11 +44,29 @@ namespace BovineLabs.Analyzers.UI
             Copy(ReflectionDirectory + "Gu.Roslyn.Extensions.dll", directory);
         }
 
+        private static void DocumentationOnClicked()
+        {
+            var directory = Util.GetCreateDirectory();
+
+            Copy(DocumentationDirectory + "CommonMark.dll", directory);
+            Copy(DocumentationDirectory + "DocumentationAnalyzers.CodeFixes.dll", directory);
+            Copy(DocumentationDirectory + "DocumentationAnalyzers.dll", directory);
+        }
+
         private static void Copy(string asset, string targetDirectory)
         {
             var filename = Path.GetFileName(asset);
+            if (filename == null)
+            {
+                Debug.LogError($"Invalid asset ({asset})");
+                return;
+            }
+
             var target = Path.Combine(targetDirectory, filename);
-            AssetDatabase.CopyAsset(asset, target);
+            if (!AssetDatabase.CopyAsset(asset, target))
+            {
+                Debug.LogError($"File ({asset}) not found.");
+            }
         }
 
         private void OnEnable()
@@ -61,6 +80,7 @@ namespace BovineLabs.Analyzers.UI
 
             root.Query<Button>("stylecop").First().clickable.clicked += StyleCopOnClicked;
             root.Query<Button>("reflection").First().clickable.clicked += ReflectionOnClicked;
+            root.Query<Button>("documentation").First().clickable.clicked += DocumentationOnClicked;
 
             var targetDirectoryField = root.Query<TextField>("targetdirectory").First();
             targetDirectoryField.value = Util.GetDirectory();
