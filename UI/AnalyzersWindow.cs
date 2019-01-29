@@ -15,7 +15,6 @@ namespace BovineLabs.Analyzers.UI
         private const string Packages = "Packages/com.bovinelabs.analyzers/";
         private const string StyleCopDirectory = Packages + "RoslynAnalyzers/StyleCopAnalyzers/";
         private const string ReflectionDirectory = Packages + "RoslynAnalyzers/ReflectionAnalyzers/";
-        private const string DocumentationDirectory = Packages + "RoslynAnalyzers/DocumentationAnalyzers/";
         private const string UIDirectory = "Packages/com.bovinelabs.analyzers/UI/";
 
         [MenuItem("Window/BovineLabs/Analyzers")]
@@ -42,15 +41,6 @@ namespace BovineLabs.Analyzers.UI
 
             Copy(ReflectionDirectory + "ReflectionAnalyzers.dll", directory);
             Copy(ReflectionDirectory + "Gu.Roslyn.Extensions.dll", directory);
-        }
-
-        private static void DocumentationOnClicked()
-        {
-            var directory = Util.GetCreateDirectory();
-
-            Copy(DocumentationDirectory + "CommonMark.dll", directory);
-            Copy(DocumentationDirectory + "DocumentationAnalyzers.CodeFixes.dll", directory);
-            Copy(DocumentationDirectory + "DocumentationAnalyzers.dll", directory);
         }
 
         private static void Copy(string asset, string targetDirectory)
@@ -80,7 +70,6 @@ namespace BovineLabs.Analyzers.UI
 
             root.Query<Button>("stylecop").First().clickable.clicked += StyleCopOnClicked;
             root.Query<Button>("reflection").First().clickable.clicked += ReflectionOnClicked;
-            root.Query<Button>("documentation").First().clickable.clicked += DocumentationOnClicked;
 
             var targetDirectoryField = root.Query<TextField>("targetdirectory").First();
             targetDirectoryField.value = Util.GetDirectory();
