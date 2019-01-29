@@ -107,7 +107,7 @@ namespace BovineLabs.Analyzers
                             .Contains("'$(Configuration)|$(Platform)'") ?? false))
                 .ToArray();
 
-            // Add <LangVersion>7.2</LangVersion> to these PropertyGroups:
+            // Add <LangVersion>7.3</LangVersion> to these PropertyGroups:
             foreach (XElement node in nodes)
             {
                 node.Add(new XElement(ns + "LangVersion", CSharpVersion));
