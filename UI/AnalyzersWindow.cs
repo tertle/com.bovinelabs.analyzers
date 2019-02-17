@@ -6,9 +6,15 @@ namespace BovineLabs.Analyzers.UI
 {
     using System.IO;
     using UnityEditor;
-    using UnityEditor.Experimental.UIElements;
     using UnityEngine;
+#if UNITY_2019_1_OR_NEWER
+    using UnityEditor.UIElements;
+    using UnityEngine.UIElements;
+#else
+    using UnityEditor.Experimental.UIElements;
     using UnityEngine.Experimental.UIElements;
+#endif
+
 
     public class AnalyzersWindow : EditorWindow
     {
@@ -62,10 +68,10 @@ namespace BovineLabs.Analyzers.UI
         private void OnEnable()
         {
             var asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(UIDirectory + "AnalyzersTemplate.uxml");
-            var ui = asset.CloneTree(null);
-            ui.AddStyleSheetPath(UIDirectory + "AnalyzersStyle.uss");
+            var ui = asset.CloneTree((string)null);
+            //ui.AddStyleSheetPath(UIDirectory + "AnalyzersStyle.uss");
 
-            var root = this.GetRootVisualContainer();
+            var root = this.rootVisualElement;
             root.Add(ui);
 
             root.Query<Button>("stylecop").First().clickable.clicked += StyleCopOnClicked;
@@ -73,7 +79,7 @@ namespace BovineLabs.Analyzers.UI
 
             var targetDirectoryField = root.Query<TextField>("targetdirectory").First();
             targetDirectoryField.value = Util.GetDirectory();
-            targetDirectoryField.OnValueChanged(evt => Util.SetDirectory(evt.newValue));
+            targetDirectoryField.RegisterValueChangedCallback(evt => Util.SetDirectory(evt.newValue));
         }
     }
 }
