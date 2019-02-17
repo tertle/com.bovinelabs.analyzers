@@ -8,8 +8,8 @@
   "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
   "settings": {
     "documentationRules": {
-      "companyName": "Timothy Raines",
-	  "copyrightText" : "    Copyright (c) Timothy Raines. All rights reserved."
+      "companyName": "BovineLabs",
+	  "copyrightText" : "    Copyright (c) BovineLabs. All rights reserved."
     }
   }
 }
