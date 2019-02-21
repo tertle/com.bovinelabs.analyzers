@@ -2,13 +2,12 @@
 //     Copyright (c) Timothy Raines. All rights reserved.
 // </copyright>
 
-using System.Reflection;
-
 namespace BovineLabs.Analyzers
 {
     using System;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Text;
     using System.Xml.Linq;
     using UnityEditor;
@@ -65,7 +64,7 @@ namespace BovineLabs.Analyzers
             list[lastIdx] = temp;
             return true;
         }
-        
+
         private static readonly MethodInfo OurSLoadedAssembliesGetter = typeof(EditorWindow)
             .Assembly.GetType("UnityEditor.EditorAssemblies")
             ?.GetProperty("loadedAssemblies", BindingFlags.Static | BindingFlags.NonPublic)
@@ -105,8 +104,6 @@ namespace BovineLabs.Analyzers
 
         private static void UpdateProject(string projectFile)
         {
-            Debug.Log(projectFile);
-
             XDocument xml;
             try
             {
