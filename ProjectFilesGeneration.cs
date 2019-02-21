@@ -3,6 +3,9 @@
 // </copyright>
 
 
+using System.Collections.Generic;
+using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
+
 namespace BovineLabs.Analyzers
 {
     using System;
@@ -30,29 +33,70 @@ namespace BovineLabs.Analyzers
         {
             SyntaxTree.VisualStudio.Unity.Bridge.ProjectFilesGenerator.ProjectFileGeneration += (name, content) =>
             {
-                return ParseContents(contents);
+                XDocument xml = XDocument.Parse(contents);
+                
+                UpgradeProjectFile(xml);
+    
+                // Write to the csproj file:
+                using (Utf8StringWriter str = new Utf8StringWriter())
+                {
+                    xml.Save(str);
+                    return str.ToString();
+                }
             };
         }
 #else
-        public static string OnGeneratedCSProject(string path, string contents)
+        [InitializeOnLoadMethod]
+        private static void OnGeneratedCSProjectFiles()
         {
-            return ParseContents(contents);
-        }
-#endif
-
-        private static string ParseContents(string contents)
-        {
-            XDocument xml = XDocument.Parse(contents);
-            
-            UpgradeProjectFile(xml);
-
-            // Write to the csproj file:
-            using (Utf8StringWriter str = new Utf8StringWriter())
+            try
             {
-                xml.Save(str);
-                return str.ToString();
+                var lines = GetCsprojLinesInSln();
+                foreach (var projectFile in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.csproj")
+                    .Where(csprojFile => lines.Any(line => line.Contains("\"" + Path.GetFileName(csprojFile) + "\"")))
+                    .ToArray())
+                {
+                    UpdateProject(projectFile);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex);
             }
         }
+
+        private static string[] GetCsprojLinesInSln()
+        {
+            var slnFile =
+                Path.GetFullPath(Path.GetFileName(Directory.GetParent(Application.dataPath).FullName) + ".sln");
+
+            if (!File.Exists(slnFile))
+            {
+                return new string[0];
+            }
+
+            return File.ReadAllText(slnFile).Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries)
+                .Where(a => a.StartsWith("Project(")).ToArray();
+        }
+
+        private static void UpdateProject(string projectFile)
+        {
+            XDocument xml;
+            try
+            {
+                xml = XDocument.Load(projectFile);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+                return;
+            }
+
+            UpgradeProjectFile(xml);
+
+            xml.Save(projectFile);
+        }
+#endif
 
         private static void UpgradeProjectFile(XDocument doc)
         {
