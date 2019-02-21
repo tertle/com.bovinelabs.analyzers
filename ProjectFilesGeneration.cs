@@ -50,7 +50,7 @@ namespace BovineLabs.Analyzers
 
             if (ShiftToLast(loadedAssemblies, a => Equals(a, typeof(ProjectFilesGeneration).Assembly)))
             {
-                OnGeneratedCSProjectFiles();
+                //OnGeneratedCSProjectFiles();
             }
         }
 
@@ -70,8 +70,16 @@ namespace BovineLabs.Analyzers
             ?.GetProperty("loadedAssemblies", BindingFlags.Static | BindingFlags.NonPublic)
             ?.GetGetMethod(true);
 
-        private static void OnGeneratedCSProjectFiles()
+        private static string OnGeneratedCSProject(string path, string content)
         {
+            return UpdateProjectSource(content);
+        }
+
+        /*private static void OnGeneratedCSProjectFiles()
+        {
+            Debug.Log("OnGeneratedCSProjectFiles");
+            return;
+
             try
             {
                 var lines = GetCsprojLinesInSln();
@@ -86,7 +94,7 @@ namespace BovineLabs.Analyzers
             {
                 Debug.LogError(ex);
             }
-        }
+        }*/
 
         private static string[] GetCsprojLinesInSln()
         {
@@ -100,6 +108,20 @@ namespace BovineLabs.Analyzers
 
             return File.ReadAllText(slnFile).Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries)
                 .Where(a => a.StartsWith("Project(")).ToArray();
+        }
+
+        private static string UpdateProjectSource(string contents)
+        {
+            XDocument xml = XDocument.Parse(contents);
+                
+            UpgradeProjectFile(xml);
+    
+            // Write to the csproj file:
+            using (Utf8StringWriter str = new Utf8StringWriter())
+            {
+                xml.Save(str);
+                return str.ToString();
+            }
         }
 
         private static void UpdateProject(string projectFile)
