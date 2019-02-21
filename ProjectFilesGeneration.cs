@@ -19,18 +19,16 @@ namespace BovineLabs.Analyzers
     /// <summary>
     /// Customize the project file generation with Roslyn Analyzers and custom c# version.
     /// </summary>
-#if ENABLE_VTSU
     [InitializeOnLoad]
     public class ProjectFilesGeneration
-#else
-    public class ProjectFilesGeneration : AssetPostprocessor
-#endif
     {
 #if ENABLE_VSTU
         private const string CSharpVersion = "7.3";
+#endif
 
         static ProjectFilesGeneration()
         {
+#if ENABLE_VSTU
             SyntaxTree.VisualStudio.Unity.Bridge.ProjectFilesGenerator.ProjectFileGeneration += (name, content) =>
             {
                 XDocument xml = XDocument.Parse(contents);
@@ -44,11 +42,7 @@ namespace BovineLabs.Analyzers
                     return str.ToString();
                 }
             };
-        }
 #else
-        [InitializeOnLoadMethod]
-        private static void OnGeneratedCSProjectFiles()
-        {
             try
             {
                 var lines = GetCsprojLinesInSln();
@@ -81,6 +75,8 @@ namespace BovineLabs.Analyzers
 
         private static void UpdateProject(string projectFile)
         {
+            Debug.Log(projectFile);
+
             XDocument xml;
             try
             {
@@ -95,8 +91,8 @@ namespace BovineLabs.Analyzers
             UpgradeProjectFile(xml);
 
             xml.Save(projectFile);
-        }
 #endif
+        }
 
         private static void UpgradeProjectFile(XDocument doc)
         {
@@ -190,14 +186,7 @@ namespace BovineLabs.Analyzers
                 var result = updater(element.Value);
                 if (result != element.Value)
                 {
-                    Debug.Log(
-                        $"Overriding existing project property {name}. Old value: {element.Value}, new value: {result}");
-
                     element.SetValue(result);
-                }
-                else
-                {
-                    Debug.Log($"Property {name} already set. Old value: {element.Value}, new value: {result}");
                 }
             }
             else
