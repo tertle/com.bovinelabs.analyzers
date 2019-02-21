@@ -2,6 +2,7 @@
 //     Copyright (c) Timothy Raines. All rights reserved.
 // </copyright>
 
+
 namespace BovineLabs.Analyzers
 {
     using System;
@@ -15,28 +16,42 @@ namespace BovineLabs.Analyzers
     /// <summary>
     /// Customize the project file generation with Roslyn Analyzers and custom c# version.
     /// </summary>
+#if ENABLE_VTSU
     [InitializeOnLoad]
     public class ProjectFilesGeneration
+#else
+    public class ProjectFilesGeneration : AssetPostprocessor
+#endif
     {
+#if ENABLE_VSTU
         private const string CSharpVersion = "7.3";
 
         static ProjectFilesGeneration()
         {
-#if ENABLE_VSTU
             SyntaxTree.VisualStudio.Unity.Bridge.ProjectFilesGenerator.ProjectFileGeneration += (name, content) =>
             {
-                XDocument xml = XDocument.Parse(content);
-
-                UpgradeProjectFile(xml);
-
-                // Write to the csproj file:
-                using (Utf8StringWriter str = new Utf8StringWriter())
-                {
-                    xml.Save(str);
-                    return str.ToString();
-                }
+                return ParseContents(contents);
             };
+        }
+#else
+        public static string OnGeneratedCSProject(string path, string contents)
+        {
+            return ParseContents(contents);
+        }
 #endif
+
+        private static string ParseContents(string contents)
+        {
+            XDocument xml = XDocument.Parse(contents);
+            
+            UpgradeProjectFile(xml);
+
+            // Write to the csproj file:
+            using (Utf8StringWriter str = new Utf8StringWriter())
+            {
+                xml.Save(str);
+                return str.ToString();
+            }
         }
 
         private static void UpgradeProjectFile(XDocument doc)
@@ -46,7 +61,9 @@ namespace BovineLabs.Analyzers
             {
                 XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
                 SetRoslynAnalyzers(projectContentElement, xmlns);
+#if UNITY_VTSU
                 SetCSharpVersion(projectContentElement, xmlns);
+#endif
             }
         }
 
@@ -97,6 +114,8 @@ namespace BovineLabs.Analyzers
             projectContentElement.Add(itemGroup);
         }
 
+        // Don't need to do this for Rider as it has built in support for setting c# version.
+#if UNITY_VTSU
         private static void SetCSharpVersion(XContainer projectContentElement, XNamespace ns)
         {
             // Find all PropertyGroups with Condition defining a Configuration and a Platform:
@@ -113,6 +132,7 @@ namespace BovineLabs.Analyzers
                 node.Add(new XElement(ns + "LangVersion", CSharpVersion));
             }
         }
+#endif
 
         private static void SetOrUpdateProperty(
             XContainer root,
