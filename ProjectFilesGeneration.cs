@@ -29,9 +29,9 @@ namespace BovineLabs.Analyzers
             SyntaxTree.VisualStudio.Unity.Bridge.ProjectFilesGenerator.ProjectFileGeneration += (name, content) =>
             {
                 XDocument xml = XDocument.Parse(contents);
-                
+
                 UpgradeProjectFile(xml);
-    
+
                 // Write to the csproj file:
                 using (Utf8StringWriter str = new Utf8StringWriter())
                 {
@@ -113,9 +113,9 @@ namespace BovineLabs.Analyzers
         private static string UpdateProjectSource(string contents)
         {
             XDocument xml = XDocument.Parse(contents);
-                
+
             UpgradeProjectFile(xml);
-    
+
             // Write to the csproj file:
             using (Utf8StringWriter str = new Utf8StringWriter())
             {
@@ -179,24 +179,31 @@ namespace BovineLabs.Analyzers
 
             foreach (var file in relPaths)
             {
-                if (new FileInfo(file).Extension == ".dll")
-                {
-                    var reference = new XElement(xmlns + "Analyzer");
-                    reference.Add(new XAttribute("Include", file));
-                    itemGroup.Add(reference);
-                }
+                var extension = new FileInfo(file).Extension;
 
-                if (new FileInfo(file).Extension == ".json")
+                switch (extension)
                 {
-                    var reference = new XElement(xmlns + "AdditionalFiles");
-                    reference.Add(new XAttribute("Include", file));
-                    itemGroup.Add(reference);
-                }
+                    case ".dll":
+                    {
+                        var reference = new XElement(xmlns + "Analyzer");
+                        reference.Add(new XAttribute("Include", file));
+                        itemGroup.Add(reference);
+                        break;
+                    }
 
-                // ReSharper disable once StringLiteralTypo
-                if (new FileInfo(file).Extension == ".ruleset")
-                {
-                    SetOrUpdateProperty(projectContentElement, xmlns, "CodeAnalysisRuleSet", existing => file);
+                    case ".json":
+                    {
+                        var reference = new XElement(xmlns + "AdditionalFiles");
+                        reference.Add(new XAttribute("Include", file));
+                        itemGroup.Add(reference);
+                        break;
+                    }
+
+                    case ".ruleset":
+                    {
+                        SetOrUpdateProperty(projectContentElement, xmlns, "CodeAnalysisRuleSet", existing => file);
+                        break;
+                    }
                 }
             }
 
