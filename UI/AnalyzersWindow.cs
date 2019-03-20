@@ -68,10 +68,18 @@ namespace BovineLabs.Analyzers.UI
         private void OnEnable()
         {
             var asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(UIDirectory + "AnalyzersTemplate.uxml");
+#if UNITY_2019_1_OR_NEWER
             var ui = asset.CloneTree((string)null);
+#else
+            var ui = asset.CloneTree(null);
             //ui.AddStyleSheetPath(UIDirectory + "AnalyzersStyle.uss");
+#endif
 
+#if UNITY_2019_1_OR_NEWER
             var root = this.rootVisualElement;
+#else
+            var root = this.GetRootVisualContainer();
+#endif
             root.Add(ui);
 
             root.Query<Button>("stylecop").First().clickable.clicked += StyleCopOnClicked;
@@ -79,7 +87,11 @@ namespace BovineLabs.Analyzers.UI
 
             var targetDirectoryField = root.Query<TextField>("targetdirectory").First();
             targetDirectoryField.value = Util.GetDirectory();
+#if UNITY_2019_1_OR_NEWER
             targetDirectoryField.RegisterValueChangedCallback(evt => Util.SetDirectory(evt.newValue));
+#else
+            targetDirectoryField.OnValueChanged(evt => Util.SetDirectory(evt.newValue));
+#endif
         }
     }
 }
