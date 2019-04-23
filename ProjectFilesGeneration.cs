@@ -7,11 +7,9 @@ namespace BovineLabs.Analyzers
     using System;
     using System.IO;
     using System.Linq;
-    using System.Reflection;
     using System.Text;
     using System.Xml.Linq;
     using UnityEditor;
-    using UnityEngine;
 
     /// <summary>
     /// Customize the project file generation with Roslyn Analyzers and custom c# version.
@@ -26,7 +24,7 @@ namespace BovineLabs.Analyzers
         static ProjectFilesGeneration()
         {
 #if ENABLE_VSTU
-            SyntaxTree.VisualStudio.Unity.Bridge.ProjectFilesGenerator.ProjectFileGeneration += (name, content) =>
+            SyntaxTree.VisualStudio.Unity.Bridge.ProjectFilesGenerator.ProjectFileGeneration += (name, contents) =>
             {
                 XDocument xml = XDocument.Parse(contents);
 
@@ -40,77 +38,9 @@ namespace BovineLabs.Analyzers
                 }
             };
 #else
-
-            var loadedAssemblies = (Assembly[]) OurSLoadedAssembliesGetter?.Invoke(null, new object[0]);
-            if (loadedAssemblies == null)
-            {
-                Debug.LogError("Error getting 'UnityEditor.EditorAssemblies.loadedAssemblies' by reflection");
-                return;
-            }
-
-            if (ShiftToLast(loadedAssemblies, a => Equals(a, typeof(ProjectFilesGeneration).Assembly)))
-            {
-                //OnGeneratedCSProjectFiles();
-            }
         }
 
-        private static bool ShiftToLast<T>(T[] list, Predicate<T> predicate)
-        {
-            int lastIdx = list.Length - 1;
-            int idx = Array.FindIndex(list, predicate);
-            if (lastIdx < 0 || idx < 0 || idx == lastIdx) return false;
-            T temp = list[idx];
-            Array.Copy(list, idx + 1, list, idx, lastIdx - idx);
-            list[lastIdx] = temp;
-            return true;
-        }
-
-        private static readonly MethodInfo OurSLoadedAssembliesGetter = typeof(EditorWindow)
-            .Assembly.GetType("UnityEditor.EditorAssemblies")
-            ?.GetProperty("loadedAssemblies", BindingFlags.Static | BindingFlags.NonPublic)
-            ?.GetGetMethod(true);
-
-        private static string OnGeneratedCSProject(string path, string content)
-        {
-            return UpdateProjectSource(content);
-        }
-
-        /*private static void OnGeneratedCSProjectFiles()
-        {
-            Debug.Log("OnGeneratedCSProjectFiles");
-            return;
-
-            try
-            {
-                var lines = GetCsprojLinesInSln();
-                foreach (var projectFile in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.csproj")
-                    .Where(csprojFile => lines.Any(line => line.Contains("\"" + Path.GetFileName(csprojFile) + "\"")))
-                    .ToArray())
-                {
-                    UpdateProject(projectFile);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError(ex);
-            }
-        }*/
-
-        private static string[] GetCsprojLinesInSln()
-        {
-            var slnFile =
-                Path.GetFullPath(Path.GetFileName(Directory.GetParent(Application.dataPath).FullName) + ".sln");
-
-            if (!File.Exists(slnFile))
-            {
-                return new string[0];
-            }
-
-            return File.ReadAllText(slnFile).Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries)
-                .Where(a => a.StartsWith("Project(")).ToArray();
-        }
-
-        private static string UpdateProjectSource(string contents)
+        private static string OnGeneratedCSProject(string path, string contents)
         {
             XDocument xml = XDocument.Parse(contents);
 
@@ -122,24 +52,6 @@ namespace BovineLabs.Analyzers
                 xml.Save(str);
                 return str.ToString();
             }
-        }
-
-        private static void UpdateProject(string projectFile)
-        {
-            XDocument xml;
-            try
-            {
-                xml = XDocument.Load(projectFile);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogException(ex);
-                return;
-            }
-
-            UpgradeProjectFile(xml);
-
-            xml.Save(projectFile);
 #endif
         }
 
