@@ -1,9 +1,9 @@
 {
     "name": "com.bovinelabs.analyzers",
     "description": "A package to easily add Roslyn Analyzers to Unity projects.",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "unity": "2018.3",
-    "displayName": "BovineLabs.Analyzers",
+    "displayName": "BovineLabs Analyzers",
     "dependencies": {         
     }
 }
