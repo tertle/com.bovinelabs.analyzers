@@ -62,7 +62,7 @@ namespace BovineLabs.Analyzers
             {
                 XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
                 SetRoslynAnalyzers(projectContentElement, xmlns);
-#if UNITY_VTSU
+#if UNITY_VSTU
                 SetCSharpVersion(projectContentElement, xmlns);
 #endif
             }
@@ -123,7 +123,7 @@ namespace BovineLabs.Analyzers
         }
 
         // Don't need to do this for Rider as it has built in support for setting c# version.
-#if UNITY_VTSU
+#if UNITY_VSTU
         private static void SetCSharpVersion(XContainer projectContentElement, XNamespace ns)
         {
             // Find all PropertyGroups with Condition defining a Configuration and a Platform:
