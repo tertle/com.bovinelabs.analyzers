@@ -3,7 +3,8 @@
   "settings": {
     "documentationRules": {
       "companyName": "BovineLabs",
-	  "copyrightText" : "    Copyright (c) BovineLabs. All rights reserved."
+	  "copyrightText": "    Copyright (c) BovineLabs. All rights reserved.",
+	  "documentInternalElements": false
     }
   }
 }
