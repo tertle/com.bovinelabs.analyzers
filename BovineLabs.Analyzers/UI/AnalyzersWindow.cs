@@ -7,23 +7,17 @@ namespace BovineLabs.Analyzers.UI
     using System.IO;
     using UnityEditor;
     using UnityEngine;
-#if UNITY_2019_1_OR_NEWER
-    using UnityEditor.UIElements;
     using UnityEngine.UIElements;
-#else
-    using UnityEditor.Experimental.UIElements;
-    using UnityEngine.Experimental.UIElements;
-#endif
-
 
     public class AnalyzersWindow : EditorWindow
     {
         private const string Packages = "Packages/com.bovinelabs.analyzers/";
         private const string StyleCopDirectory = Packages + "RoslynAnalyzers/StyleCopAnalyzers/";
         private const string ReflectionDirectory = Packages + "RoslynAnalyzers/ReflectionAnalyzers/";
-        private const string UIDirectory = "Packages/com.bovinelabs.analyzers/UI/";
+        private const string DisposableDirectory = Packages + "RoslynAnalyzers/DisposableAnalyzers/";
+        private const string UIDirectory = Packages + "BovineLabs.Analyzers/UI/";
 
-        [MenuItem("Window/BovineLabs/Analyzers")]
+        [MenuItem("BovineLabs/Analyzers", priority = 1005)]
         private static void ShowWindow()
         {
             var window = GetWindow<AnalyzersWindow>();
@@ -49,6 +43,14 @@ namespace BovineLabs.Analyzers.UI
             Copy(ReflectionDirectory + "Gu.Roslyn.Extensions.dll", directory);
         }
 
+        private static void DisposableOnClicked()
+        {
+            var directory = Util.GetCreateDirectory();
+
+            Copy(DisposableDirectory + "IDisposableAnalyzers.dll", directory);
+            Copy(DisposableDirectory + "Gu.Roslyn.Extensions.dll", directory);
+        }
+
         private static void Copy(string asset, string targetDirectory)
         {
             var filename = Path.GetFileName(asset);
@@ -59,39 +61,24 @@ namespace BovineLabs.Analyzers.UI
             }
 
             var target = Path.Combine(targetDirectory, filename);
-            if (!AssetDatabase.CopyAsset(asset, target))
-            {
-                Debug.LogError($"File ({asset}) not found.");
-            }
+
+            File.Copy(asset, target, true);
         }
 
         private void OnEnable()
         {
             var asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(UIDirectory + "AnalyzersTemplate.uxml");
-#if UNITY_2019_1_OR_NEWER
             var ui = asset.CloneTree((string)null);
-#else
-            var ui = asset.CloneTree(null);
-            //ui.AddStyleSheetPath(UIDirectory + "AnalyzersStyle.uss");
-#endif
-
-#if UNITY_2019_1_OR_NEWER
             var root = this.rootVisualElement;
-#else
-            var root = this.GetRootVisualContainer();
-#endif
-            root.Add(ui);
 
+            root.Add(ui);
             root.Query<Button>("stylecop").First().clickable.clicked += StyleCopOnClicked;
             root.Query<Button>("reflection").First().clickable.clicked += ReflectionOnClicked;
+            root.Query<Button>("disposable").First().clickable.clicked += DisposableOnClicked;
 
-            var targetDirectoryField = root.Query<TextField>("targetdirectory").First();
+            var targetDirectoryField = root.Query<TextField>("targetDirectory").First();
             targetDirectoryField.value = Util.GetDirectory();
-#if UNITY_2019_1_OR_NEWER
             targetDirectoryField.RegisterValueChangedCallback(evt => Util.SetDirectory(evt.newValue));
-#else
-            targetDirectoryField.OnValueChanged(evt => Util.SetDirectory(evt.newValue));
-#endif
         }
     }
 }

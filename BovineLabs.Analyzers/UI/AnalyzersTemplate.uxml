@@ -3,8 +3,9 @@
   <ui:Label class="title" text="Analyzers"/>
   <ui:Box>
     <ui:Label text="Analyzer Directory"/>
-    <ui:TextField name="targetdirectory" text="RoslynAnalyzers" />
+    <ui:TextField name="targetDirectory" text="RoslynAnalyzers" />
   </ui:Box>
   <ui:Button name="stylecop" text="Import StyleCopAnalyzers"/>
   <ui:Button name="reflection" text="Import ReflectionAnalyzers"/>
+  <ui:Button name="disposable" text="Import IDisposableAnalyzers"/>
 </ui:UXML>
