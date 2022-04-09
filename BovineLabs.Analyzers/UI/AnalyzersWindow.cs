@@ -17,7 +17,7 @@ namespace BovineLabs.Analyzers.UI
         private const string DisposableDirectory = Packages + "RoslynAnalyzers/DisposableAnalyzers/";
         private const string UIDirectory = Packages + "BovineLabs.Analyzers/UI/";
 
-        [MenuItem("BovineLabs/Tools/Analyzers", priority = 1005)]
+        [MenuItem("Window/BovineLabs/Tools/Analyzers", priority = 1005)]
         private static void ShowWindow()
         {
             var window = GetWindow<AnalyzersWindow>();
